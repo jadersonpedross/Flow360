@@ -1,146 +1,110 @@
 // src/pages/LoginSignup.jsx
-import React, { useState } from 'react'
-import { auth, db, googleProvider, sendPasswordResetEmail } from '../firebase/firebase'
+import React, { useState } from 'react';
+import { auth, db, googleProvider, sendPasswordResetEmail } from '../firebase/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
-} from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
+} from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
 const LoginSignup = () => {
-  // Controla se está em modo "Login" ou "Cadastro"
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  // Campos do formulário
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-
-  // Campos extras para cadastro
-  const [name, setName] = useState('')
-
-  // Mensagens de feedback
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
-
-  // Função para logar/cadastrar
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErrorMessage('')
-    setSuccessMessage('')
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
 
-    // Validação mínima de senha
     if (!isLogin && password.length < 6) {
-      setErrorMessage('A senha deve ter pelo menos 6 caracteres.')
-      return
+      setErrorMessage('A senha deve ter pelo menos 6 caracteres.');
+      return;
     }
 
     try {
       if (isLogin) {
-        // Login
-        await signInWithEmailAndPassword(auth, email, password)
-        setSuccessMessage('Login realizado com sucesso!')
-        // Redirecione para outra rota/página se desejar
+        await signInWithEmailAndPassword(auth, email, password);
+        setSuccessMessage('Login realizado com sucesso!');
       } else {
-        // Cadastro
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-
-        // Salva dados do usuário no Firestore (opcional, mas recomendado)
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, 'users', userCredential.user.uid), {
           name,
           email,
           createdAt: new Date(),
-        })
-
-        setSuccessMessage('Cadastro realizado com sucesso! Faça login para continuar.')
-        // Limpa campos
-        setName('')
-        setEmail('')
-        setPassword('')
-        // Muda automaticamente para tela de Login (opcional)
-        // setIsLogin(true)
+        });
+        setSuccessMessage('Cadastro realizado com sucesso! Faça login para continuar.');
+        setName('');
+        setEmail('');
+        setPassword('');
       }
     } catch (error) {
-      console.error('Erro:', error.code, error.message)
-      // Tratar alguns códigos de erro conhecidos
+      console.error('Erro:', error.code, error.message);
       if (error.code === 'auth/email-already-in-use') {
-        setErrorMessage('Este email já está em uso. Por favor, use outro ou faça login.')
+        setErrorMessage('Este email já está em uso. Por favor, use outro ou faça login.');
       } else if (error.code === 'auth/invalid-email') {
-        setErrorMessage('Email inválido. Verifique e tente novamente.')
+        setErrorMessage('Email inválido. Verifique e tente novamente.');
       } else if (error.code === 'auth/weak-password') {
-        setErrorMessage('A senha é muito fraca. Use pelo menos 6 caracteres.')
+        setErrorMessage('A senha é muito fraca. Use pelo menos 6 caracteres.');
       } else if (error.code === 'auth/wrong-password') {
-        setErrorMessage('Senha incorreta. Tente novamente.')
+        setErrorMessage('Senha incorreta. Tente novamente.');
       } else if (error.code === 'auth/user-not-found') {
-        setErrorMessage('Usuário não encontrado. Verifique o email ou faça cadastro.')
+        setErrorMessage('Usuário não encontrado. Verifique o email ou faça cadastro.');
       } else {
-        setErrorMessage('Erro ao processar. Verifique as informações e tente novamente.')
+        setErrorMessage('Erro ao processar. Verifique as informações e tente novamente.');
       }
     }
-  }
+  };
 
-  // Função para login com Google
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider)
-      setSuccessMessage('Login com Google realizado com sucesso!')
+      await signInWithPopup(auth, googleProvider);
+      setSuccessMessage('Login com Google realizado com sucesso!');
     } catch (error) {
-      console.error('Erro Google Login:', error.code, error.message)
-      setErrorMessage('Falha no login com Google.')
+      console.error('Erro Google Login:', error.code, error.message);
+      setErrorMessage('Falha no login com Google.');
     }
-  }
+  };
 
-  // Função para reset de senha
   const handleForgotPassword = async () => {
     if (!email) {
-      setErrorMessage('Informe um email para redefinir a senha.')
-      return
+      setErrorMessage('Informe um email para redefinir a senha.');
+      return;
     }
     try {
-      await sendPasswordResetEmail(auth, email)
-      setSuccessMessage('Email de redefinição de senha enviado! Verifique sua caixa de entrada.')
+      await sendPasswordResetEmail(auth, email);
+      setSuccessMessage('Email de redefinição de senha enviado! Verifique sua caixa de entrada.');
     } catch (error) {
-      console.error('Erro redefinição de senha:', error.code, error.message)
+      console.error('Erro redefinição de senha:', error.code, error.message);
       if (error.code === 'auth/user-not-found') {
-        setErrorMessage('Usuário não encontrado. Verifique o email digitado.')
+        setErrorMessage('Usuário não encontrado. Verifique o email digitado.');
       } else {
-        setErrorMessage('Não foi possível enviar o email de redefinição. Tente novamente.')
+        setErrorMessage('Não foi possível enviar o email de redefinição. Tente novamente.');
       }
     }
-  }
+  };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Lado esquerdo - Imagem ou gradiente */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-tr from-blue-400 to-purple-600 items-center justify-center relative overflow-hidden">
-        <div className="text-white text-3xl font-bold p-5 drop-shadow-lg z-10">
-          <p>Bem-vindo ao Flow 360</p>
-          <p className="mt-2 text-sm font-normal">Gerencie facilmente seus investimentos</p>
-        </div>
-        {/* Pode usar uma imagem de fundo aqui se quiser */}
-        {/* <img 
-          src="https://images.unsplash.com/photo-1621589338703-eebd8329e1c2?..." 
-          alt="background" 
-          className="absolute inset-0 w-full h-full object-cover opacity-20" 
-        /> */}
-      </div>
-
-      {/* Lado direito - Formulário */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full p-8 space-y-6">
-          <h2 className="text-3xl font-bold text-center text-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 p-4">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="p-8">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
             {isLogin ? 'Login' : 'Cadastro'}
           </h2>
 
           {/* Mensagens de erro ou sucesso */}
           {errorMessage && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
               {errorMessage}
             </div>
           )}
           {successMessage && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative">
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
               {successMessage}
             </div>
           )}
@@ -148,7 +112,7 @@ const LoginSignup = () => {
           {/* Botão de Login com Google */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 py-2 rounded font-semibold transition duration-200"
+            className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 rounded-lg font-semibold transition duration-200 mb-6"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -158,7 +122,7 @@ const LoginSignup = () => {
             <span>Continuar com Google</span>
           </button>
 
-          <div className="flex items-center justify-center space-x-2">
+          <div className="flex items-center justify-center space-x-2 mb-6">
             <div className="h-px bg-gray-300 w-1/4" />
             <span className="text-gray-400 font-light">ou</span>
             <div className="h-px bg-gray-300 w-1/4" />
@@ -171,7 +135,7 @@ const LoginSignup = () => {
                 <label className="block mb-1 font-medium text-gray-600">Nome</label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
                   placeholder="Seu nome completo"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -185,7 +149,7 @@ const LoginSignup = () => {
               <label className="block mb-1 font-medium text-gray-600">Email</label>
               <input
                 type="email"
-                className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
                 placeholder="voce@exemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -199,7 +163,7 @@ const LoginSignup = () => {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="w-full border border-gray-300 px-3 py-2 rounded pr-10 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
                   placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -245,7 +209,7 @@ const LoginSignup = () => {
             {/* Botão Principal (Login ou Cadastro) */}
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded font-semibold transition-colors"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition-colors duration-200"
             >
               {isLogin ? 'Entrar' : 'Cadastrar'}
             </button>
@@ -253,7 +217,7 @@ const LoginSignup = () => {
 
           {/* Esqueci a senha (somente na tela de Login) */}
           {isLogin && (
-            <div className="text-right text-sm mt-2">
+            <div className="text-right text-sm mt-4">
               <button
                 onClick={handleForgotPassword}
                 className="text-blue-500 hover:underline"
@@ -264,15 +228,15 @@ const LoginSignup = () => {
           )}
 
           {/* Alternar entre Login e Cadastro */}
-          <div className="text-center mt-4">
+          <div className="text-center mt-6">
             {isLogin ? (
               <span>
                 Não tem conta?{' '}
                 <button
                   onClick={() => {
-                    setIsLogin(false)
-                    setErrorMessage('')
-                    setSuccessMessage('')
+                    setIsLogin(false);
+                    setErrorMessage('');
+                    setSuccessMessage('');
                   }}
                   className="text-blue-500 hover:underline font-medium"
                 >
@@ -284,9 +248,9 @@ const LoginSignup = () => {
                 Já possui conta?{' '}
                 <button
                   onClick={() => {
-                    setIsLogin(true)
-                    setErrorMessage('')
-                    setSuccessMessage('')
+                    setIsLogin(true);
+                    setErrorMessage('');
+                    setSuccessMessage('');
                   }}
                   className="text-blue-500 hover:underline font-medium"
                 >
@@ -298,7 +262,7 @@ const LoginSignup = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginSignup
+export default LoginSignup;
