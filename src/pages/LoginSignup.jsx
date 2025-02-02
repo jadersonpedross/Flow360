@@ -1,4 +1,4 @@
-// src/pages/LoginSignup.jsx
+
 import React, { useState } from 'react';
 import { auth, db, googleProvider, sendPasswordResetEmail } from '../firebase/firebase';
 import {
