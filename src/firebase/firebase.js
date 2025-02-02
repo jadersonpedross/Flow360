@@ -8,7 +8,15 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig 
+const firebaseConfig = {
+    apiKey: "AIzaSyDicCUBGQcYiR7f3R2gqMM4f-bwwz1C7G4",
+    authDomain: "flow360-app.firebaseapp.com",
+    projectId: "flow360-app",
+    storageBucket: "flow360-app.firebasestorage.app",
+    messagingSenderId: "869351739950",
+    appId: "1:869351739950:web:8ded9d0920eecf651f85bf",
+    measurementId: "G-4808J6Y096"
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

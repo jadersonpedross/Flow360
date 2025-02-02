@@ -99,12 +99,12 @@ const LoginSignup = () => {
 
           {/* Mensagens de erro ou sucesso */}
           {errorMessage && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+            <div className="mb-4 rounded border border-red-400 bg-red-100 px-4 py-2 text-red-700">
               {errorMessage}
             </div>
           )}
           {successMessage && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
+            <div className="mb-4 rounded border border-green-400 bg-green-100 px-4 py-2 text-green-700">
               {successMessage}
             </div>
           )}
@@ -112,30 +112,30 @@ const LoginSignup = () => {
           {/* Botão de Login com Google */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 rounded-lg font-semibold transition duration-200 mb-6"
+            className="mb-6 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-2 text-gray-700 font-semibold transition duration-200 hover:bg-gray-50"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               alt="google icon"
-              className="w-5 h-5 mr-2"
+              className="h-5 w-5"
             />
-            <span>Continuar com Google</span>
+            <span className="text-sm">Continuar com Google</span>
           </button>
 
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <div className="h-px bg-gray-300 w-1/4" />
-            <span className="text-gray-400 font-light">ou</span>
-            <div className="h-px bg-gray-300 w-1/4" />
+          <div className="mb-6 flex items-center justify-center space-x-2">
+            <div className="h-px w-1/4 bg-gray-300" />
+            <span className="font-light text-gray-400">ou</span>
+            <div className="h-px w-1/4 bg-gray-300" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Nome (exibido só no cadastro) */}
             {!isLogin && (
               <div>
-                <label className="block mb-1 font-medium text-gray-600">Nome</label>
+                <label className="mb-1 block font-medium text-gray-600">Nome</label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="Seu nome completo"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -146,10 +146,10 @@ const LoginSignup = () => {
 
             {/* Email */}
             <div>
-              <label className="block mb-1 font-medium text-gray-600">Email</label>
+              <label className="mb-1 block font-medium text-gray-600">Email</label>
               <input
                 type="email"
-                className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="voce@exemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -159,11 +159,11 @@ const LoginSignup = () => {
 
             {/* Senha (com mostrar/ocultar) */}
             <div>
-              <label className="block mb-1 font-medium text-gray-600">Senha</label>
+              <label className="mb-1 block font-medium text-gray-600">Senha</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="w-full border border-gray-300 px-3 py-2 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -209,7 +209,7 @@ const LoginSignup = () => {
             {/* Botão Principal (Login ou Cadastro) */}
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition-colors duration-200"
+              className="w-full rounded-lg bg-blue-500 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-600"
             >
               {isLogin ? 'Entrar' : 'Cadastrar'}
             </button>
@@ -217,7 +217,7 @@ const LoginSignup = () => {
 
           {/* Esqueci a senha (somente na tela de Login) */}
           {isLogin && (
-            <div className="text-right text-sm mt-4">
+            <div className="mt-4 text-right text-sm">
               <button
                 onClick={handleForgotPassword}
                 className="text-blue-500 hover:underline"
@@ -228,7 +228,7 @@ const LoginSignup = () => {
           )}
 
           {/* Alternar entre Login e Cadastro */}
-          <div className="text-center mt-6">
+          <div className="mt-6 text-center">
             {isLogin ? (
               <span>
                 Não tem conta?{' '}
@@ -238,7 +238,7 @@ const LoginSignup = () => {
                     setErrorMessage('');
                     setSuccessMessage('');
                   }}
-                  className="text-blue-500 hover:underline font-medium"
+                  className="font-medium text-blue-500 hover:underline"
                 >
                   Cadastre-se
                 </button>
@@ -252,7 +252,7 @@ const LoginSignup = () => {
                     setErrorMessage('');
                     setSuccessMessage('');
                   }}
-                  className="text-blue-500 hover:underline font-medium"
+                  className="font-medium text-blue-500 hover:underline"
                 >
                   Faça login
                 </button>
