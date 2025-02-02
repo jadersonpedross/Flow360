@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { auth, db, googleProvider, sendPasswordResetEmail } from '../firebase/firebase';
 import {
   createUserWithEmailAndPassword,
@@ -16,6 +16,7 @@ const LoginSignup = () => {
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,9 +30,12 @@ const LoginSignup = () => {
 
     try {
       if (isLogin) {
+        // Login
         await signInWithEmailAndPassword(auth, email, password);
         setSuccessMessage('Login realizado com sucesso!');
+        navigate('/dashboard');
       } else {
+        // Cadastro
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, 'users', userCredential.user.uid), {
           name,
@@ -42,6 +46,7 @@ const LoginSignup = () => {
         setName('');
         setEmail('');
         setPassword('');
+        navigate('/dashboard');
       }
     } catch (error) {
       console.error('Erro:', error.code, error.message);
@@ -65,6 +70,7 @@ const LoginSignup = () => {
     try {
       await signInWithPopup(auth, googleProvider);
       setSuccessMessage('Login com Google realizado com sucesso!');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Erro Google Login:', error.code, error.message);
       setErrorMessage('Falha no login com Google.');
@@ -91,6 +97,7 @@ const LoginSignup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 p-4">
+      {/* Container principal (card) */}
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="p-8">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
@@ -112,7 +119,10 @@ const LoginSignup = () => {
           {/* Botão de Login com Google */}
           <button
             onClick={handleGoogleLogin}
-            className="mb-6 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-2 text-gray-700 font-semibold transition duration-200 hover:bg-gray-50"
+            className="w-full mb-6 flex items-center justify-center gap-2 
+                       rounded-lg border border-gray-300 bg-white 
+                       py-2 text-gray-700 font-semibold hover:bg-gray-50 
+                       transition duration-200"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -122,34 +132,40 @@ const LoginSignup = () => {
             <span className="text-sm">Continuar com Google</span>
           </button>
 
+          {/* Separador */}
           <div className="mb-6 flex items-center justify-center space-x-2">
             <div className="h-px w-1/4 bg-gray-300" />
             <span className="font-light text-gray-400">ou</span>
             <div className="h-px w-1/4 bg-gray-300" />
           </div>
 
+          {/* Formulário */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Nome (exibido só no cadastro) */}
+            {/* Campo Nome (exibido só no cadastro) */}
             {!isLogin && (
               <div>
                 <label className="mb-1 block font-medium text-gray-600">Nome</label>
                 <input
                   type="text"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 
+                             transition duration-200 focus:outline-none 
+                             focus:ring-2 focus:ring-blue-400"
                   placeholder="Seu nome completo"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  required={!isLogin}
+                  required
                 />
               </div>
             )}
 
-            {/* Email */}
+            {/* Campo Email */}
             <div>
               <label className="mb-1 block font-medium text-gray-600">Email</label>
               <input
                 type="email"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 
+                           transition duration-200 focus:outline-none 
+                           focus:ring-2 focus:ring-blue-400"
                 placeholder="voce@exemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -157,13 +173,16 @@ const LoginSignup = () => {
               />
             </div>
 
-            {/* Senha (com mostrar/ocultar) */}
+            {/* Campo Senha (com mostrar/ocultar) */}
             <div>
               <label className="mb-1 block font-medium text-gray-600">Senha</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full rounded-lg border border-gray-300 
+                             px-3 py-2 pr-14 transition duration-200 
+                             focus:outline-none focus:ring-2 
+                             focus:ring-blue-400"
                   placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -172,9 +191,11 @@ const LoginSignup = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute top-2 right-3 text-gray-500 hover:text-gray-700"
+                  className="absolute top-1/2 right-4 z-10 -translate-y-1/2
+                             text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? (
+                    /* Ícone "Mostrar Senha Ativo" */
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -189,6 +210,7 @@ const LoginSignup = () => {
                       />
                     </svg>
                   ) : (
+                    /* Ícone "Mostrar Senha Inativo" */
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -209,7 +231,8 @@ const LoginSignup = () => {
             {/* Botão Principal (Login ou Cadastro) */}
             <button
               type="submit"
-              className="w-full rounded-lg bg-blue-500 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-600"
+              className="w-full rounded-lg bg-blue-500 py-2 font-semibold text-white
+                         transition-colors duration-200 hover:bg-blue-600"
             >
               {isLogin ? 'Entrar' : 'Cadastrar'}
             </button>
